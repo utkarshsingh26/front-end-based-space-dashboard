@@ -20,7 +20,11 @@ function Map({ markers = [] }) { // Default to an empty array if markers is unde
                     markers.map((marker, index) => (
                         <Marker key={index} position={[marker.lat, marker.long]}>
                             <Popup>
-                                Latitude: {marker.lat}, Longitude: {marker.long}
+                            <div>
+                                    <strong>Title:</strong> {marker.title} <br />
+                                    <strong>Summary:</strong> {marker.summary} <br />
+                                    <strong>URL:</strong> <a href={marker.url} target="_blank" rel="noopener noreferrer">{marker.url}</a>
+                            </div>
                             </Popup>
                         </Marker>
                     ))
