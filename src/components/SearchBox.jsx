@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import dayjs from 'dayjs';
@@ -9,6 +9,17 @@ import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 
 function SearchBox() {
+
+    const [keyword, setKeyword] = useState('');
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
+    function handleClick(){
+        const formattedStartDate = startDate ? startDate.format('MM-DD-YYYY') : 'Not selected';
+        const formattedEndDate = endDate ? endDate.format('MM-DD-YYYY') : 'Not selected';
+        console.log(keyword, formattedStartDate, formattedEndDate)
+    }
+
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Box
@@ -29,11 +40,11 @@ function SearchBox() {
                         gap: 2,
                     }}
                 >
-                    <TextField id="outlined-basic" label="Keyword" variant="outlined" />
-                    <DatePicker label="Start Date" />
-                    <DatePicker label="End Date" />
+                    <TextField id="outlined-basic" label="Keyword" variant="outlined" onChange={(e) =>setKeyword(e.target.value)} />
+                    <DatePicker label="Start Date" onChange={(e) => setStartDate(e)} />
+                    <DatePicker label="End Date" onChange={(e) => setEndDate(e)} />
                 </Box>
-                <Button variant="contained" endIcon={<SendIcon />}>
+                <Button variant="contained" endIcon={<SendIcon /> } onClick={handleClick}>
                     Send
                 </Button>
             </Box>
