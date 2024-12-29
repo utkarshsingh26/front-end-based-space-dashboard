@@ -8,22 +8,21 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import Papa from 'papaparse';
-
+import Map from './Map'; // Import the Map component
 
 function SearchBox() {
 
     const [keyword, setKeyword] = useState('');
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [finalResult, setFinalResult] = useState([]);
 
     function handleClick(){
         const formattedStartDate = startDate ? startDate.format('MM-DD-YYYY') : 'Not selected';
         const formattedEndDate = endDate ? endDate.format('MM-DD-YYYY') : 'Not selected';
-        console.log(keyword, formattedStartDate, formattedEndDate)
+        console.log(keyword, formattedStartDate, formattedEndDate);
         loadCSV(keyword, formattedStartDate, formattedEndDate);
     }
-
-    const finalResult = [];
 
     function loadCSV(keyword, from, to) {
         const csvUrl = new URL('./spaceheatmap_data_f47.csv', import.meta.url); 
@@ -34,17 +33,18 @@ function SearchBox() {
               header: true,
               complete: results => {
                 let csv = results.data;
-                for(let i=0; i<csv.length; i++){
-                  if((csv[i].locations == keyword) && (new Date(csv[i].date)>=new Date(from) && new Date(csv[i].date)<=new Date(to))){
-                    finalResult.push(csv[i]);
-                  }
-                }
-                console.log(finalResult)
+                const filteredResults = csv.filter(item => 
+                  item.locations === keyword && 
+                  new Date(item.date) >= new Date(from) && 
+                  new Date(item.date) <= new Date(to)
+                );
+                setFinalResult(filteredResults); // Update state with filtered results
+                console.log(filteredResults); // Log the filtered results
               }
             });
           })
           .catch(error => console.error('Error fetching or parsing CSV:', error));
-      }
+    }
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -66,13 +66,16 @@ function SearchBox() {
                         gap: 2,
                     }}
                 >
-                    <TextField id="outlined-basic" label="Keyword" variant="outlined" onChange={(e) =>setKeyword(e.target.value)} />
+                    <TextField id="outlined-basic" label="Keyword" variant="outlined" onChange={(e) => setKeyword(e.target.value)} />
                     <DatePicker label="Start Date" onChange={(e) => setStartDate(e)} />
                     <DatePicker label="End Date" onChange={(e) => setEndDate(e)} />
                 </Box>
-                <Button variant="contained" endIcon={<SendIcon /> } onClick={handleClick}>
+                <Button variant="contained" endIcon={<SendIcon />} onClick={handleClick}>
                     Send
                 </Button>
+
+                {/* Pass finalResult as a prop to Map */}
+                <Map markers={finalResult} />
             </Box>
         </LocalizationProvider>
     );
