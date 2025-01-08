@@ -1,25 +1,38 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import 'leaflet.heat'; 
+import 'leaflet.heat';
 import "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/images/marker-icon-2x.png";
 
 function Map({ markers = [] }) {
     const position = [51.505, -0.09]; // Default map position
-
-
     const heatmapData = markers.map(marker => [marker.lat, marker.long]);
 
     function AddHeatmapLayer() {
         const map = useMap();
-        useEffect(() => {
-            if (heatmapData.length > 0) {
+        const heatmapLayerRef = useRef(null); 
 
-                L.heatLayer(heatmapData, { radius: 25 }).addTo(map);
+        useEffect(() => {
+
+            if (heatmapLayerRef.current) {
+                map.removeLayer(heatmapLayerRef.current);
             }
-        }, [map, heatmapData]); 
+
+
+            if (heatmapData.length > 0) {
+                const heatmapLayer = L.heatLayer(heatmapData, { radius: 25 }).addTo(map);
+                heatmapLayerRef.current = heatmapLayer;
+            }
+
+
+            return () => {
+                if (heatmapLayerRef.current) {
+                    map.removeLayer(heatmapLayerRef.current);
+                }
+            };
+        }, [map, heatmapData]);
 
         return null;
     }
@@ -35,7 +48,7 @@ function Map({ markers = [] }) {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
-                
+
                 <AddHeatmapLayer />
 
                 {markers.length > 0 ? (

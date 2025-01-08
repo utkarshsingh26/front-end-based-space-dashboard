@@ -24,27 +24,62 @@ function SearchBox() {
         loadCSV(keyword, formattedStartDate, formattedEndDate);
     }
 
+    // function loadCSV(keyword, from, to) {
+    //     const csvUrl = new URL('./spaceheatmap_data_f47.csv', import.meta.url); 
+    //     fetch(csvUrl)
+    //       .then(response => response.text())
+    //       .then(csvString => {
+    //         Papa.parse(csvString, {
+    //           header: true,
+    //           complete: results => {
+    //             let csv = results.data;
+    //             const filteredResults = csv.filter(item => 
+    //               item.locations === keyword && 
+    //               new Date(item.date) >= new Date(from) && 
+    //               new Date(item.date) <= new Date(to)
+    //             );
+    //             setFinalResult(filteredResults); // Update state with filtered results
+    //             console.log(filteredResults); // Log the filtered results
+    //           }
+    //         });
+    //       })
+    //       .catch(error => console.error('Error fetching or parsing CSV:', error));
+    // }
+
     function loadCSV(keyword, from, to) {
-        const csvUrl = new URL('./spaceheatmap_data_f47.csv', import.meta.url); 
+        // const csvUrl = new URL('./spaceheatmap_data_f47.csv', import.meta.url); 
+        const csvUrl = new URL('./improving.csv', import.meta.url); 
         fetch(csvUrl)
-          .then(response => response.text())
-          .then(csvString => {
-            Papa.parse(csvString, {
-              header: true,
-              complete: results => {
-                let csv = results.data;
-                const filteredResults = csv.filter(item => 
-                  item.locations === keyword && 
-                  new Date(item.date) >= new Date(from) && 
-                  new Date(item.date) <= new Date(to)
-                );
-                setFinalResult(filteredResults); // Update state with filtered results
-                console.log(filteredResults); // Log the filtered results
-              }
-            });
-          })
-          .catch(error => console.error('Error fetching or parsing CSV:', error));
+            .then(response => response.text())
+            .then(csvString => {
+                Papa.parse(csvString, {
+                    header: true,
+                    complete: results => {
+                        let csv = results.data;
+    
+                        
+                        const filteredResults = csv.filter(item => {
+                            
+                            const containsKeyword = Object.values(item).some(value => 
+                                value && value.toString().toLowerCase().includes(keyword.toLowerCase())
+                            );
+    
+                            
+                            const isWithinDateRange = new Date(item.date) >= new Date(from) &&
+                                                      new Date(item.date) <= new Date(to);
+    
+                            
+                            return containsKeyword && isWithinDateRange;
+                        });
+    
+                        setFinalResult(filteredResults); 
+                        console.log(filteredResults); 
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching or parsing CSV:', error));
     }
+    
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
