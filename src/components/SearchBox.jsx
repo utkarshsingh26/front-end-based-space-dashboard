@@ -8,7 +8,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
 import Papa from 'papaparse';
-import Map from './Map'; // Import the Map component
+import Map from './Map';
 
 function SearchBox() {
 
@@ -48,7 +48,7 @@ function SearchBox() {
 
     function loadCSV(keyword, from, to) {
         // const csvUrl = new URL('./spaceheatmap_data_f47.csv', import.meta.url); 
-        const csvUrl = new URL('./improving.csv', import.meta.url); 
+        const csvUrl = new URL('../dataset/dataset.csv', import.meta.url); 
         fetch(csvUrl)
             .then(response => response.text())
             .then(csvString => {
